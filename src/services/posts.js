@@ -19,4 +19,30 @@ export async function fetchPost(key) {
   return snapshot.val();
 }
 
+export async function createPost(post) {
+  const newPostKey = database.ref().child('posts').push().key;
+  await database.ref().update({
+    [`/posts/${newPostKey}`]: post,
+  });
+  return newPostKey;
+}
 
+export function deletePost(key) {
+  return database.ref(`/posts/${key}`).remove();
+}
+
+export function watchPosts(cb) {
+  let first = true;
+  function handler(snapshot) {
+    if (first) {
+      first = false;
+    } else {
+      cb(snapshot.val());
+    }
+  }
+  const ref = database.ref('/posts');
+  ref.on('value', handler);
+  return () => {
+    ref.off('value', handler);
+  };
+}

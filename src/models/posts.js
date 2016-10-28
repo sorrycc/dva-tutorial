@@ -1,6 +1,7 @@
 import {
   fetchPosts,
-  fetchPost
+  fetchPost,
+  watchPosts
 } from '../services/posts';
 import pathToRegexp from 'path-to-regexp';
 
@@ -15,7 +16,7 @@ export default {
       return {
         ...state,
         postsByKey,
-        posts: Object.keys(postsByKey),
+        posts: Object.keys(postsByKey).reverse(),
       }
     },
     update(state, { payload: post }) {
@@ -48,6 +49,11 @@ export default {
         if (match) {
           dispatch({ type: 'fetchPost', payload: match[1] });
         }
+      });
+    },
+    watch({ dispatch }) {
+      watchPosts(posts => {
+        dispatch({ type: 'save', payload: posts });
       });
     },
   },
